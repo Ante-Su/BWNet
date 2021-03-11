@@ -40,12 +40,11 @@ class BWNet(Model):
           arr = np.loadtxt('kernel_0.8_20.txt',dtype=np.float32)
           arr = np.reshape(arr,[1,20,8,8])
           arr = np.transpose(arr,(2,3,0,1))
-          print(arr)
-          with tf.variable_scope('DCT_preprocess'):
-              W_DCT = tf.get_variable('W', initializer=arr, \
+          with tf.variable_scope('GPD_preprocess'):
+              W_GPD = tf.get_variable('W', initializer=arr, \
                           dtype=tf.float32, \
                           regularizer=None,trainable=False)
-              conv = tf.nn.conv2d(_inputs,W_DCT, [1,1,1,1], 'SAME',data_format=self.data_format)
+              conv = tf.nn.conv2d(_inputs,W_GPD, [1,1,1,1], 'SAME',data_format=self.data_format)
               actv = tf.clip_by_value(conv,-8,8)
           with tf.variable_scope('Layer2'): 
               conv1=self.conv2d(actv,filters=10,name="conv1",kernel_size=1)
@@ -136,10 +135,6 @@ class BWNet(Model):
               conv2=self.conv2d(actv1,filters=320,name="conv2")
               actv2=layers.batch_norm(conv2)
               res=tf.add_n([res,actv2])
-              # avgp = tf.reduce_mean(res, reduction_axis,  keep_dims=True )
-              # ip = layers.fully_connected(layers.flatten(avgp),num_outputs=2,activation_fn=None, normalizer_fn=None,
-                # weights_initializer=layers.xavier_initializer(uniform=False),
-                # biases_initializer=None, scope='ip')
           with tf.variable_scope('Layer12'):
               conv1=self.conv2d(res,filters=32,name="conv1")
               actv1=tf.nn.relu(conv1)
@@ -147,5 +142,4 @@ class BWNet(Model):
               soft_max = tf.nn.softmax(conv2,dim=3,name="feature_pre")
               x=tf.reduce_mean(soft_max, axis=[1,2],keep_dims=True)
               logits=layers.flatten(x)
-              print(logits.get_shape())
         self.outputs = logits

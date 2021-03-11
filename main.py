@@ -8,7 +8,7 @@ from generator import *
 from queues import *
 from BWNet import BWNet
 
-parser = argparse.ArgumentParser(description='tensorflow implementation of SRNet')
+parser = argparse.ArgumentParser(description='tensorflow implementation of BWNet')
 
 parser.add_argument('train_cover_dir', type=str, metavar='PATH',
                     help='path of directory containing all ' +
@@ -74,7 +74,7 @@ optimizer = tf.train.AdadeltaOptimizer(args.lr)
 if args.is_testing:
   test_ds_size = len(glob(args.test_dir_cover+'/*'))*2
   test_gen = partial(gen_test,args.test_dir_cover,args.test_dir_stego)
-  test_dataset(SRNet,test_gen,args.test_batch_size,test_ds_size,args.load_path)
+  test_dataset(BWNet,test_gen,args.test_batch_size,test_ds_size,args.load_path)
 else:
   train(BWNet, train_gen, valid_gen, args.batch_size, \
       args.test_batch_size, valid_ds_size, \

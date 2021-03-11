@@ -115,9 +115,7 @@ def train(model_class, train_gen, valid_gen, train_batch_size, \
         sess.run(disable_training_op)
         sess.run([valid_loss_s.reset_variable_op, \
                   valid_accuracy_s.reset_variable_op, \
-                  #valid_accuracyNet1_s.reset_variable_op, \
                   train_loss_s.reset_variable_op, \
-                  #train_accuracyNet1_s.reset_variable_op,\
                   train_accuracy_s.reset_variable_op])
         _time = time.time()
         for j in range(0, valid_ds_size, valid_batch_size):
@@ -174,7 +172,6 @@ def test_dataset(model_class, gen, batch_size, ds_size, load_path):
                                              accuracy_summary.mean_variable])
     print("Accuracy:", mean_accuracy, " | Loss:", mean_loss)
     
-### Implementation of Adamax optimizer, taken from : https://github.com/openai/iaf/blob/master/tf_utils/adamax.py
 from tensorflow.python.ops import control_flow_ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import state_ops
@@ -183,12 +180,6 @@ from tensorflow.python.training import optimizer
 import tensorflow as tf
 
 class AdamaxOptimizer(optimizer.Optimizer):
-    """
-    Optimizer that implements the Adamax algorithm. 
-    See [Kingma et. al., 2014](http://arxiv.org/abs/1412.6980)
-    ([pdf](http://arxiv.org/pdf/1412.6980.pdf)).
-    @@__init__
-    """
 
     def __init__(self, learning_rate=0.001, beta1=0.9, beta2=0.999, use_locking=False, name="Adamax"):
         super(AdamaxOptimizer, self).__init__(use_locking, name)
@@ -196,7 +187,6 @@ class AdamaxOptimizer(optimizer.Optimizer):
         self._beta1 = beta1
         self._beta2 = beta2
 
-        # Tensor versions of the constructor arguments, created in _prepare().
         self._lr_t = None
         self._beta1_t = None
         self._beta2_t = None
@@ -207,7 +197,6 @@ class AdamaxOptimizer(optimizer.Optimizer):
         self._beta2_t = ops.convert_to_tensor(self._beta2, name="beta2")
 
     def _create_slots(self, var_list):
-        # Create slots for the first and second moments.
         for v in var_list:
             self._zeros_slot(v, "m", self._name)
             self._zeros_slot(v, "v", self._name)
@@ -217,7 +206,7 @@ class AdamaxOptimizer(optimizer.Optimizer):
         beta1_t = math_ops.cast(self._beta1_t, var.dtype.base_dtype)
         beta2_t = math_ops.cast(self._beta2_t, var.dtype.base_dtype)
         if var.dtype.base_dtype == tf.float16:
-            eps = 1e-7  # Can't use 1e-8 due to underflow -- not sure if it makes a big difference.
+            eps = 1e-7 
         else:
             eps = 1e-8
 

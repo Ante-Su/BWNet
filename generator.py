@@ -34,9 +34,7 @@ def gen_flip_and_rot(cover_dir, stego_dir, thread_idx=0, n_threads=1):
             if  load_mat:
               try:
                 batch[0,:,:,0] = io.loadmat(cover_path)['I_spatial']
-                #print(cover_path)
                 batch[1,:,:,0] = io.loadmat(stego_path)['I_spatial']
-                #print(cover_path)
               except ValueError as e:
                 print(cover_path,stego_path)
             else:
